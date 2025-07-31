@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>{% block title %}All Debit{% endblock %}</title>
+    <style>
+      body { background: #f4f6ff; font-family:sans-serif; padding: 0; margin: 0; }
+      .navbar {
+        background: #304ffe; color: white; padding: 15px;
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .navbar a { color: white; margin: 0 10px; text-decoration: none; }
+      .navbar a:hover { text-decoration: underline; }
+      .container { padding: 32px; }
+      .flash-message.success { color: #256029; background: #c8e6c9; padding: 8px 16px;}
+      .flash-message.danger { color: #b71c1c; background: #ffcdd2; padding: 8px 16px;}
+      table { background: #fff; border-collapse: collapse; width: 100%; max-width: 800px; box-shadow: 0 3px 15px rgba(48,79,254,0.08);}
+      th, td { padding: 10px; border: 1px solid #bbdefb; }
+      th { background: #bbdefb; }
+    </style>
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body>
+    <div class="navbar">
+      <div>
+        <span><strong>All Debit Web</strong></span>
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('index') }}">Home</a>
+          <a href="{{ url_for('entries') }}">All Entries</a>
+        {% endif %}
+      </div>
+      <div>
+      {% if current_user.is_authenticated %}
+        Hello, {{ current_user.username }}! <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+      {% endif %}
+      </div>
+    </div>
+    <div class="container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>

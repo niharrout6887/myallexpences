@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Add Debit Entry{% endblock %}
+{% block content %}
+  <h2>Add New Debit Entry</h2>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    <p>{{ form.date.label }}<br>{{ form.date() }}</p>
+    <p>{{ form.price.label }}<br>{{ form.price() }}</p>
+    <p>{{ form.payment_method.label }}<br>
+      {% for subfield in form.payment_method %}
+        {{ subfield() }} {{ subfield.label }}
+      {% endfor %}
+    </p>
+    <p>{{ form.payment_reason.label }}<br>{{ form.payment_reason(size=40) }}</p>
+    <p>{{ form.submit() }}</p>
+  </form>
+{% endblock %}
+
+{% if update %}
+  <h2>Update Debit Entry</h2>
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <!-- form fields here -->
+    <p>{{ form.submit(label='Update') }}</p>
+  </form>
+{% else %}
+  <h2>Add New Debit Entry</h2>
+  <form method="POST" action="{{ url_for('index') }}">
+    {{ form.hidden_tag() }}
+    <!-- form fields here -->
+    <p>{{ form.submit(label='Submit') }}</p>
+  </form>
+{% endif %}
