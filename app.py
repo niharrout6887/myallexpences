@@ -1,13 +1,12 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, abort
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Entry
 from forms import LoginForm, EntryForm
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import abort
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secretkey'  # Change to a strong secret key in production
+app.config['SECRET_KEY'] = 'secretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///debit_app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -19,7 +18,6 @@ login_manager.init_app(app)
 
 with app.app_context():
     db.create_all()
-    # Create admin if doesn't exist
     if not User.query.filter_by(username='nihar').first():
         admin_user = User(
             username='nihar',
@@ -62,7 +60,7 @@ def index():
     if form.validate_on_submit():
         entry = Entry(
             date=str(form.date.data),
-            price = request.form.get("price"),
+            price=form.price.data,
             payment_method=form.payment_method.data,
             payment_reason=form.payment_reason.data,
             user_id=current_user.id
@@ -76,66 +74,47 @@ def index():
 @app.route('/entries')
 @login_required
 def entries():
-    # Admin can see all entries; regular users see only their own
     if current_user.role == 'admin':
         entries = Entry.query.all()
     else:
         entries = Entry.query.filter_by(user_id=current_user.id).all()
     return render_template('entries.html', entries=entries)
 
-
-
 @app.route('/entry/update/<int:entry_id>', methods=['GET', 'POST'])
 @login_required
 def update_entry(entry_id):
     entry = Entry.query.get_or_404(entry_id)
-
     if current_user.role != 'admin' and entry.user_id != current_user.id:
         abort(403)
-
-    form = EntryForm()
-
+    form = EntryForm(obj=entry)
     if request.method == 'GET':
-        # Convert string to date object for WTForms DateField
         try:
-            form.date.data = datetime.strptime(entry.date, '%Y-%m-%d').date()
+            if entry.date:
+                form.date.data = datetime.strptime(entry.date, '%Y-%m-%d').date()
         except Exception:
             form.date.data = None
-        form.price.data = entry.price
-        form.payment_method.data = entry.payment_method
-        form.payment_reason.data = entry.payment_reason
-
     if form.validate_on_submit():
-        entry.date = form.date.data.strftime('%Y-%m-%d')  # Save as string
+        entry.date = form.date.data.strftime('%Y-%m-%d')
         entry.price = form.price.data
         entry.payment_method = form.payment_method.data
         entry.payment_reason = form.payment_reason.data
         db.session.commit()
         flash('Entry updated successfully!', 'success')
         return redirect(url_for('entries'))
-
     return render_template('update_entry.html', form=form, entry=entry)
 
-
-# Delete Entry
 @app.route('/entry/delete/<int:entry_id>', methods=['POST', 'GET'])
 @login_required
 def delete_entry(entry_id):
     entry = Entry.query.get_or_404(entry_id)
-
-    # Permission check: admin or owner only
     if current_user.role != 'admin' and entry.user_id != current_user.id:
-        abort(403)  # Forbidden
-
+        abort(403)
     if request.method == 'POST':
         db.session.delete(entry)
         db.session.commit()
         flash("Entry deleted successfully!", "success")
         return redirect(url_for('entries'))
-
-    # Optionally confirm deletion on GET page
     return render_template('confirm_delete.html', entry=entry)
-
 
 if __name__ == '__main__':
     app.run(debug=True)

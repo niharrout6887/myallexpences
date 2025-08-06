@@ -1,12 +1,22 @@
-{% extends 'base.html' %}
-{% block title %}Login - All Debit{% endblock %}
-{% block content %}
-  <h2>Login</h2>
-  <form method="POST">
-    {{ form.hidden_tag() }}
-    <p>{{ form.username.label }}<br>{{ form.username(size=32) }}</p>
-    <p>{{ form.password.label }}<br>{{ form.password(size=32) }}</p>
-    <p>{{ form.submit() }}</p>
-  </form>
-  <p>Admin login: <b>admin</b> / <b>admin</b></p>
-{% endblock %}
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div>{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ form.username.label }} {{ form.username(size=32) }} <br>
+        {{ form.password.label }} {{ form.password(size=32) }} <br>
+        {{ form.submit() }}
+    </form>
+</body>
+</html>

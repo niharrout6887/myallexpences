@@ -1,33 +1,20 @@
-{% extends 'base.html' %}
-{% block title %}Add Debit Entry{% endblock %}
-{% block content %}
-  <h2>Add New Debit Entry</h2>
-  <form method="POST">
-    {{ form.hidden_tag() }}
-    <p>{{ form.date.label }}<br>{{ form.date() }}</p>
-    <p>{{ form.price.label }}<br>{{ form.price() }}</p>
-    <p>{{ form.payment_method.label }}<br>
-      {% for subfield in form.payment_method %}
-        {{ subfield() }} {{ subfield.label }}
-      {% endfor %}
-    </p>
-    <p>{{ form.payment_reason.label }}<br>{{ form.payment_reason(size=40) }}</p>
-    <p>{{ form.submit() }}</p>
-  </form>
-{% endblock %}
-
-{% if update %}
-  <h2>Update Debit Entry</h2>
-  <form method="POST" action="">
-    {{ form.hidden_tag() }}
-    <!-- form fields here -->
-    <p>{{ form.submit(label='Update') }}</p>
-  </form>
-{% else %}
-  <h2>Add New Debit Entry</h2>
-  <form method="POST" action="{{ url_for('index') }}">
-    {{ form.hidden_tag() }}
-    <!-- form fields here -->
-    <p>{{ form.submit(label='Submit') }}</p>
-  </form>
-{% endif %}
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Add Entry</title>
+</head>
+<body>
+    <a href="{{ url_for('logout') }}">Logout</a>
+    <h2>Add New Entry</h2>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ form.date.label }} {{ form.date() }} <br>
+        {{ form.price.label }} {{ form.price() }} <br>
+        {{ form.payment_method.label }} {{ form.payment_method() }} <br>
+        {{ form.payment_reason.label }} {{ form.payment_reason() }} <br>
+        {{ form.submit() }}
+    </form>
+    <br>
+    <a href="{{ url_for('entries') }}">See All Entries</a>
+</body>
+</html>

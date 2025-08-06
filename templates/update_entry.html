@@ -1,30 +1,18 @@
-{% extends "base.html" %}
-{% block title %}Update Entry - All Debit{% endblock %}
-{% block content %}
-  <h2>Update Debit Entry</h2>
-  <form method="POST" action="{{ url_for('update_entry', entry_id=entry.id) }}">
-    {{ form.hidden_tag() }}
-    <p>
-      {{ form.date.label }}<br>
-      {{ form.date() }}
-    </p>
-    <p>
-      {{ form.price.label }}<br>
-      {{ form.price() }}
-    </p>
-    <p>
-      {{ form.payment_method.label }}<br>
-      {% for subfield in form.payment_method %}
-        {{ subfield() }} {{ subfield.label }}&nbsp;&nbsp;
-      {% endfor %}
-    </p>
-    <p>
-      {{ form.payment_reason.label }}<br>
-      {{ form.payment_reason(size=40) }}
-    </p>
-    <p>
-      <button type="submit">Update</button>
-      <a href="{{ url_for('entries') }}">Cancel</a>
-    </p>
-  </form>
-{% endblock %}
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Edit Entry</title>
+</head>
+<body>
+    <a href="{{ url_for('entries') }}">Back to Entries</a>
+    <h2>Update Entry</h2>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ form.date.label }} {{ form.date() }} <br>
+        {{ form.price.label }} {{ form.price() }} <br>
+        {{ form.payment_method.label }} {{ form.payment_method() }} <br>
+        {{ form.payment_reason.label }} {{ form.payment_reason() }} <br>
+        {{ form.submit() }}
+    </form>
+</body>
+</html>
